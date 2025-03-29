@@ -1,8 +1,8 @@
 # Contributions Chart
 
 A Flutter widget that displays a GitHub-style contributions graph in your Flutter application.
+![contributions_chart_radius](https://github.com/user-attachments/assets/cc15458c-5e23-4229-932e-952de6e3aefb)
 
-<img src="https://github.com/kullaniciadi/contributions_chart/raw/main/screenshots/example.png" alt="Contributions Chart Example" width="600"/>
 
 ## Features
 
