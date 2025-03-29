@@ -409,11 +409,11 @@ class _HomePageState extends State<HomePage> {
                     width: screenWidth > 900 ? 900 : screenWidth - 48,
                     showCalendar: true,
                     loadingWidget: const Center(
-                      child: Column(
+                      child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           CircularProgressIndicator(color: Colors.greenAccent),
-                          SizedBox(height: 8),
+                          SizedBox(width: 8),
                           Text('Loading GitHub contributions...'),
                         ],
                       ),
