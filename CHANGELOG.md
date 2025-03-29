@@ -1,4 +1,8 @@
 ## 1.0.0+1
+- Updated pubspec.yaml in example folder
+- Added Github address to pubspec.yaml file
+
+## 1.0.0+1
 - Updated various text elements throughout the package
 
 ## 1.0.0

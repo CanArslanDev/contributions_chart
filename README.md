@@ -21,7 +21,7 @@ Add this package to your `pubspec.yaml` file:
 
 ```yaml
 dependencies:
-  contributions_chart: ^1.0.0+1
+  contributions_chart: ^1.0.0+2
 ```
 
 Then run:
