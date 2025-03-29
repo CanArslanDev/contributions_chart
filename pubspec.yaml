@@ -1,6 +1,6 @@
 name: contributions_chart
-description: "GitHub katkı grafiğini gösteren Flutter widget'ı. GitHub profillerindeki katkı grafiğine benzer bir görselleştirme sağlar."
-version: 1.0.0
+description: "A Flutter widget that displays a GitHub contributions graph. Provides a visualization similar to the contribution graph on GitHub profiles."
+version: 1.0.0+1
 homepage:
 
 environment:
