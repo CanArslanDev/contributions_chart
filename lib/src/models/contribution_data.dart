@@ -1,27 +1,27 @@
 import 'package:flutter/foundation.dart';
 
-/// GitHub katkı grafiği için veri modeli.
+/// Data model for GitHub contribution graph.
 class ContributionData {
-  /// Katkı matrisinin veri yapısı
-  /// Dış liste günleri (0-6), iç liste haftaları (0-52) temsil eder.
+  /// Data structure for contribution matrix
+  /// Outer list represents days (0-6), inner list represents weeks (0-52).
   final List<List<int>> matrix;
 
-  /// Katkı grafiğinin temel tarihi
+  /// Base date for the contribution graph
   final DateTime baseDate;
 
-  /// Grafik yılının ilk gününün haftanın hangi günü olduğu
+  /// Day of the week for the first day of the year in the graph
   final int startWeekday;
 
-  /// Gösterilen yıl
+  /// Year being displayed
   final int year;
 
-  /// "Son zamanlarda" görünümü mü?
+  /// Is this the "Recently" view?
   final bool isRecentlyView;
 
-  /// Veri başarıyla yüklendi mi?
+  /// Has the data been successfully loaded?
   final bool isLoaded;
 
-  /// Yeni bir katkı veri nesnesi oluşturur
+  /// Creates a new contribution data object
   const ContributionData({
     required this.matrix,
     required this.baseDate,
@@ -31,7 +31,7 @@ class ContributionData {
     this.isLoaded = false,
   });
 
-  /// Boş bir katkı veri nesnesi oluşturur
+  /// Creates an empty contribution data object
   factory ContributionData.empty() {
     final emptyMatrix = List.generate(7, (i) => List.generate(53, (j) => 0));
     final now = DateTime.now();
@@ -45,7 +45,7 @@ class ContributionData {
     );
   }
 
-  /// Yeni bir veri yükleme durumu ile kopyalar
+  /// Creates a copy with new data loading status
   ContributionData copyWith({
     List<List<int>>? matrix,
     DateTime? baseDate,

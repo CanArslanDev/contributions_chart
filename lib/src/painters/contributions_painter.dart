@@ -2,57 +2,57 @@ import 'package:flutter/material.dart';
 
 import '../models/contribution_data.dart';
 
-/// GitHub katkı grafiğini çizen CustomPainter sınıfı
+/// CustomPainter class that draws the GitHub contribution graph
 class ContributionsPainter extends CustomPainter {
-  /// Katkı verileri
+  /// Contribution data
   final ContributionData data;
 
-  /// Hücreler arası boşluk
+  /// Spacing between cells
   final double cellSpacing;
 
-  /// Katkı seviyelerine göre renkler (0-4)
+  /// Colors based on contribution levels (0-4)
   final List<Color>? customColors;
 
-  /// Tek renk modu için temel renk (belirtilirse customColors yerine kullanılır)
+  /// Base color for single color mode (used instead of customColors if specified)
   final Color? singleContributionColor;
 
-  /// Tek renk modu için opaklık değerleri (0.0 - 1.0)
+  /// Opacity values for single color mode (0.0 - 1.0)
   final List<double>? singleColorOpacities;
 
-  /// Arka plan rengi
+  /// Background color
   final Color backgroundColor;
 
-  /// Katkı karelerinin köşe yarıçapı
+  /// Corner radius of contribution squares
   final double squareBorderRadius;
 
-  /// Takvim etiketlerini göster
+  /// Show calendar labels
   final bool showCalendar;
 
-  /// Ay etiketleri için metin stili
+  /// Text style for month labels
   final TextStyle? monthLabelStyle;
 
-  /// Gün etiketleri için metin stili
+  /// Text style for day labels
   final TextStyle? dayLabelStyle;
 
-  /// Özel ay etiketleri (belirtilirse 12 ad gereklidir)
+  /// Custom month labels (requires 12 names if specified)
   final List<String>? customMonthLabels;
 
-  /// Özel gün etiketleri (belirtilirse 3 ad gereklidir)
+  /// Custom day labels (requires 3 names if specified)
   final List<String>? customDayLabels;
 
-  /// Her katkı hücresi için kenarlık
+  /// Border for each contribution cell
   final Border? contributionBorder;
 
-  /// Katkısız hücreler için renk
+  /// Color for cells with no contributions
   final Color? emptyColor;
 
-  /// Özel tooltip metin formatı
+  /// Custom tooltip text format
   final String? tooltipTextFormat;
 
-  /// Bir hücreye tıklandığında çağrılacak callback
+  /// Callback when a cell is tapped
   final Function(DateTime date, int count)? onCellTap;
 
-  /// GitHub katkı grafiğini çizen CustomPainter oluşturur
+  /// Creates a CustomPainter that draws GitHub contribution graph
   ContributionsPainter({
     required this.data,
     this.cellSpacing = 4.0,
@@ -74,39 +74,39 @@ class ContributionsPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    // İlk olarak arka plan rengini çiziyoruz - tüm alanı kapladığından emin olalım
+    // First draw the background color - ensure it covers the entire area
     final backgroundPaint = Paint()..color = backgroundColor;
     final backgroundRect = Rect.fromLTWH(0, 0, size.width, size.height);
     canvas.drawRect(backgroundRect, backgroundPaint);
 
-    // Takvim etiketleri için kenar boşlukları
+    // Margins for calendar labels
     double leftPadding = 0;
     double topPadding = 0;
 
     if (showCalendar) {
-      // Takvim görünümündeyken sol ve üst kenar boşlukları ekleyelim
-      leftPadding = size.width * 0.06; // %6 sol kenar boşluğu
-      topPadding = size.height * 0.1; // %10 üst kenar boşluğu
+      // Add left and top margins when in calendar view
+      leftPadding = size.width * 0.06; // 6% left margin
+      topPadding = size.height * 0.1; // 10% top margin
     }
 
-    // Katkı grafiği için kullanılabilir alan
+    // Available area for contribution graph
     final availableWidth = size.width - leftPadding;
     final availableHeight = size.height - topPadding;
 
-    // Hücre boyutlarını hesapla
+    // Calculate cell dimensions
     final cellWidth = availableWidth / 53;
     final cellHeight = availableHeight / 7;
     final baseCellSize = cellWidth < cellHeight ? cellWidth : cellHeight;
 
-    // Widget boyutuna göre ölçeklenebilir cell spacing (padding) ve border radius değerleri
+    // Scale cell spacing (padding) and border radius values based on widget size
     final scaleFactor =
-        baseCellSize / 15.0; // 15.0 referans değer (120 height için)
+        baseCellSize / 15.0; // 15.0 is reference value (for 120 height)
     final scaledCellSpacing = cellSpacing * scaleFactor;
     final scaledBorderRadius = squareBorderRadius * scaleFactor;
 
     final cellSize = baseCellSize - (scaledCellSpacing / 2);
 
-    // Varsayılan katkı renkleri
+    // Default contribution colors
     final defaultColors = [
       emptyColor ?? Color(0xFF161b22),
       Color(0xFF0E4429),
@@ -115,7 +115,7 @@ class ContributionsPainter extends CustomPainter {
       Color(0xFF39D353),
     ];
 
-    // Tek renk modu
+    // Single color mode
     List<Color> colors;
     if (singleContributionColor != null) {
       final defaultOpacities = [0.1, 0.3, 0.5, 0.7, 0.9];
@@ -126,7 +126,7 @@ class ContributionsPainter extends CustomPainter {
           return emptyColor!;
         }
 
-        // withOpacity yerine withAlpha kullanarak daha kesin değerler elde edelim
+        // Use withAlpha instead of withOpacity for more precise values
         final alpha = (opacities[index] * 255).round();
         return singleContributionColor!.withAlpha(alpha);
       });
@@ -136,11 +136,11 @@ class ContributionsPainter extends CustomPainter {
 
     final radius = BorderRadius.circular(scaledBorderRadius);
 
-    // Toplam alanı ve offset'leri hesapla
+    // Calculate total area and offsets
     final totalWidth = 53 * cellSize + 52 * scaledCellSpacing;
     final totalHeight = 7 * cellSize + 6 * scaledCellSpacing;
 
-    // Widget boyutunu aşarsa hücre boyutunu küçült
+    // Reduce cell size if it exceeds widget dimensions
     final widgetScaleFactor =
         (totalWidth > availableWidth || totalHeight > availableHeight)
             ? (availableWidth / totalWidth < availableHeight / totalHeight
@@ -159,20 +159,20 @@ class ContributionsPainter extends CustomPainter {
     final verticalOffset =
         topPadding + (availableHeight - adjustedTotalHeight) / 2;
 
-    // Yılın başlangıç ve bitiş tarihlerini hesapla
+    // Calculate start and end dates of the year
     final firstDayOfYear = DateTime(data.year, 1, 1);
     final lastDayOfYear = DateTime(data.year, 12, 31);
 
-    // Yılın ilk haftasının günü (Pazar = 0)
+    // First day of the year's week (Sunday = 0)
     final firstDayWeekday = firstDayOfYear.weekday % 7;
 
-    // Yılın son haftasının günü (Pazar = 0)
+    // Last day of the year's week (Sunday = 0)
     final lastDayWeekday = lastDayOfYear.weekday % 7;
 
-    // Son zamanlarda görünümü mü kontrol et
+    // Check if showing recently view
     bool showingRecentlyView = data.isRecentlyView;
 
-    // Takvim etiketleri
+    // Calendar labels
     if (showCalendar) {
       _drawCalendarLabels(
         canvas,
@@ -186,24 +186,24 @@ class ContributionsPainter extends CustomPainter {
       );
     }
 
-    // Katkı karelerini çiz
+    // Draw contribution squares
     for (var weekIndex = 0; weekIndex < 53; weekIndex++) {
       for (var dayIndex = 0; dayIndex < 7; dayIndex++) {
-        // İlk haftada başlangıç gününden önceki günleri atla - son zamanlarda modunda değilse
+        // Skip days before start day in first week - unless in recently mode
         if (weekIndex == 0 &&
             dayIndex < firstDayWeekday &&
             !showingRecentlyView) {
           continue;
         }
 
-        // Son haftada yılın son gününden sonraki günleri atla
+        // Skip days after last day in last week
         if (weekIndex == 52 && dayIndex > lastDayWeekday) {
           continue;
         }
 
         final contribution = data.matrix[dayIndex][weekIndex];
 
-        // Katkı seviyesinin renkler dizisinin sınırları içinde olduğundan emin ol
+        // Ensure contribution level is within bounds of colors array
         final colorIndex = contribution.clamp(0, colors.length - 1);
 
         final rect = RRect.fromRectAndCorners(
@@ -224,9 +224,9 @@ class ContributionsPainter extends CustomPainter {
         final paint = Paint()..color = colors[colorIndex];
         canvas.drawRRect(rect, paint);
 
-        // Kenarlık çiz (varsa)
+        // Draw border (if specified)
         if (contributionBorder != null) {
-          // RRect için kenarlık çizme
+          // Border drawing for RRect
           final borderPaint =
               Paint()
                 ..style = PaintingStyle.stroke
@@ -241,7 +241,7 @@ class ContributionsPainter extends CustomPainter {
     }
   }
 
-  /// Takvim etiketlerini çizer
+  /// Draws calendar labels
   void _drawCalendarLabels(
     Canvas canvas,
     double baseCellSize,
@@ -252,7 +252,7 @@ class ContributionsPainter extends CustomPainter {
     double adjustedCellSize,
     double adjustedCellSpacing,
   ) {
-    // Varsayılan veya özelleştirilmiş metin stilleri
+    // Default or customized text styles
     final baseMonthLabelStyle = TextStyle(
       color: Colors.white70,
       fontSize: baseCellSize * 0.7,
@@ -277,7 +277,7 @@ class ContributionsPainter extends CustomPainter {
         ) ??
         baseDayLabelStyle;
 
-    // Varsayılan veya özelleştirilmiş etiketler
+    // Default or customized labels
     final monthNames =
         customMonthLabels ??
         [
@@ -297,8 +297,8 @@ class ContributionsPainter extends CustomPainter {
 
     final dayNames = customDayLabels ?? ['Mon', 'Wed', 'Fri'];
 
-    // Tüm ayları göster
-    // Her ay için yaklaşık başlangıç haftasını belirle
+    // Show all months
+    // Determine approximate starting week for each month
     final weeksPerMonth = [2, 6, 11, 15, 19, 23, 28, 32, 36, 41, 45, 50];
 
     for (int i = 0; i < 12; i++) {
@@ -315,7 +315,7 @@ class ContributionsPainter extends CustomPainter {
 
       textPainter.layout();
 
-      // Aydaki metni hafta başlangıcına konumlandırmak yerine, metnin merkezi hafta ortasında olacak şekilde konumlandıralım
+      // Position text with its center at the middle of the week instead of at the beginning
       final xPos =
           horizontalOffset +
           weekIndex * (adjustedCellSize + adjustedCellSpacing) -
@@ -325,8 +325,8 @@ class ContributionsPainter extends CustomPainter {
       textPainter.paint(canvas, Offset(xPos, yPos));
     }
 
-    // Gün isimlerini çiz (solda) - Sadece 3 gün göster
-    final dayIndices = [0, 2, 4]; // 0=Pazartesi, 2=Çarşamba, 4=Cuma
+    // Draw day names (on left) - Show only 3 days
+    final dayIndices = [0, 2, 4]; // 0=Monday, 2=Wednesday, 4=Friday
 
     for (int i = 0; i < 3; i++) {
       final textSpan = TextSpan(

@@ -1,3 +1,6 @@
+## 1.0.0+3
+- Added more explanatory comment lines to the package
+
 ## 1.0.0+2
 - Updated pubspec.yaml in example folder
 - Added Github address to pubspec.yaml file

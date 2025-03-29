@@ -3,14 +3,14 @@ import 'package:html/parser.dart' as parser;
 
 import '../models/contribution_data.dart';
 
-/// GitHub katkı verilerini getiren servis sınıfı
+/// Service class for fetching GitHub contribution data
 class GitHubService {
-  /// Belirli bir kullanıcının katkı verilerini getirir
+  /// Fetches contribution data for a specific user
   ///
-  /// [username] GitHub kullanıcı adı
-  /// [year] Veri getirilecek yıl (son zamanlarda seçiliyse yok sayılır)
-  /// [showRecent] Son zamanlardaki katkıları göster
-  /// [urlPrefix] URL ön eki (isteğe bağlı, genellikle CORS sorunlarını aşmak için kullanılır)
+  /// [username] GitHub username
+  /// [year] Year to fetch data for (ignored if recent view is selected)
+  /// [showRecent] Show recent contributions
+  /// [urlPrefix] URL prefix (optional, typically used to bypass CORS issues)
   static Future<ContributionData> fetchContributions({
     required String username,
     required int year,
@@ -35,16 +35,16 @@ class GitHubService {
       if (response.statusCode == 200) {
         return _parseContributionHtml(response.body, year, showRecent);
       } else {
-        // API hata verdi
+        // API returned an error
         return ContributionData.empty();
       }
     } catch (e) {
-      // İstek sırasında bir hata oluştu
+      // An error occurred during the request
       return ContributionData.empty();
     }
   }
 
-  /// HTML yanıtını ayrıştırarak katkı verisini oluşturur
+  /// Parses HTML response to create contribution data
   static ContributionData _parseContributionHtml(
     String htmlBody,
     int year,
@@ -58,11 +58,11 @@ class GitHubService {
       (i) => List.generate(53, (j) => 0),
     );
 
-    // "Son zamanlarda" görünümü için tarih aralığını bul
+    // Find date range for "Recently" view
     DateTime? earliestDate;
     DateTime? latestDate;
 
-    // İlk geçiş: "Son zamanlarda" görünümü için tarih aralığını belirle
+    // First pass: Determine date range for "Recently" view
     if (isRecently) {
       for (var square in squares) {
         final dateStr = square.attributes['data-date'];
@@ -78,7 +78,7 @@ class GitHubService {
       }
     }
 
-    // Hesaplama için temel tarih
+    // Base date for calculations
     DateTime baseDate;
     if (isRecently && earliestDate != null) {
       baseDate = DateTime(
@@ -90,7 +90,7 @@ class GitHubService {
       baseDate = DateTime(year, 1, 1);
     }
 
-    // GitHub'ın hafta başlangıcı için ayarlama (Pazar = 0)
+    // Adjustment for GitHub's week start (Sunday = 0)
     final startWeekday = baseDate.weekday % 7;
 
     for (var square in squares) {
@@ -99,16 +99,16 @@ class GitHubService {
 
       if (dateStr != null) {
         final date = DateTime.parse(dateStr);
-        // GitHub'a göre haftanın günü hesapla (Pazar = 0)
+        // Calculate day of week according to GitHub (Sunday = 0)
         final dayOfWeek = date.weekday % 7;
 
-        // Başlangıç tarihinden beri geçen gün sayısı
+        // Days since start date
         final daysSinceStart = date.difference(baseDate).inDays;
 
-        // Hafta hesaplama (negatif indeksleri önle)
+        // Week calculation (prevent negative indexes)
         final weekOfYear = ((daysSinceStart + startWeekday) / 7).floor();
 
-        // Geçerli aralıktaki verileri ekle
+        // Add data within valid range
         if (weekOfYear >= 0 && weekOfYear < 53 && dayOfWeek < 7) {
           contributionsList[dayOfWeek][weekOfYear] = count;
         }

@@ -7,83 +7,83 @@ import 'utils/layout_utils.dart';
 
 part 'github_contributions_widget_state.dart';
 
-/// GitHub katkı grafiğini gösteren bir widget
+/// A widget that displays GitHub contribution graph
 class GitHubContributionsWidget extends StatefulWidget {
-  /// GitHub kullanıcı adı veya profil URL'si
+  /// GitHub username or profile URL
   final String username;
 
-  /// Katkıları gösterilecek yıl ([showRecent] true ise yok sayılır)
+  /// Year to display contributions for (ignored if [showRecent] is true)
   final int? year;
 
-  /// Belirli bir yıl yerine son katkıları göster
+  /// Show recent contributions instead of a specific year
   final bool showRecent;
 
-  /// Widget'ın genişliği (genişlik ve yükseklik belirtilirse, en-boy oranına göre biri seçilir)
+  /// Width of the widget (if both width and height are specified, one will be chosen based on aspect ratio)
   final double? width;
 
-  /// Widget'ın yüksekliği (genişlik ve yükseklik belirtilirse, en-boy oranına göre biri seçilir)
+  /// Height of the widget (if both width and height are specified, one will be chosen based on aspect ratio)
   final double? height;
 
-  /// Widget'ın arka plan rengi
+  /// Background color of the widget
   final Color backgroundColor;
 
-  /// Farklı katkı seviyeleri için renk dizisi (0-4)
+  /// Color array for different contribution levels (0-4)
   final List<Color>? contributionColors;
 
-  /// Tüm katkı seviyeleri için tek renk seçeneği (ayarlanırsa, contributionColors'ı geçersiz kılar)
-  /// Katkı seviyesine göre opaklık uygulanır
+  /// Single color option for all contribution levels (overrides contributionColors if set)
+  /// Opacity is applied according to contribution level
   final Color? singleContributionColor;
 
-  /// Tek renk modu için opaklık değerleri (0.0 - 1.0)
-  /// Katkı seviyeleri 0-4 için 5 değer içermelidir
+  /// Opacity values for single color mode (0.0 - 1.0)
+  /// Must contain 5 values for contribution levels 0-4
   final List<double>? singleColorOpacities;
 
-  /// Katkı hücreleri arasındaki boşluk
+  /// Spacing between contribution cells
   final double cellSpacing;
 
-  /// Katkı karelerinin köşe yarıçapı
+  /// Corner radius of contribution squares
   final double squareBorderRadius;
 
-  /// Takvim etiketlerini göster (üstte ay adları, solda gün adları)
+  /// Show calendar labels (month names at top, day names on left)
   final bool showCalendar;
 
-  /// Ay adları için metin stili
+  /// Text style for month names
   final TextStyle? monthLabelStyle;
 
-  /// Gün adları için metin stili
+  /// Text style for day names
   final TextStyle? dayLabelStyle;
 
-  /// Özel ay adları (belirtilirse 12 ad gereklidir)
+  /// Custom month names (requires 12 names if specified)
   final List<String>? customMonthLabels;
 
-  /// Özel gün adları (belirtilirse Pzt/Çrş/Cum için 3 ad içermelidir)
+  /// Custom day names (should contain 3 names for Mon/Wed/Fri if specified)
   final List<String>? customDayLabels;
 
-  /// Her katkı hücresi için kenarlık
+  /// Border for each contribution cell
   final Border? contributionBorder;
 
-  /// Katkısız hücreler için renk
+  /// Color for cells with no contributions
   final Color? emptyColor;
 
-  /// Özel yükleme göstergesi
+  /// Custom loading indicator
   final Widget? loadingWidget;
 
-  /// Özel tooltip metin formatı
-  /// Katkı sayısı için {{count}} yer tutucusu kullanın
-  /// Tarih için {{date}} yer tutucusu kullanın
+  /// Custom tooltip text format
+  /// Use {{count}} placeholder for contribution count
+  /// Use {{date}} placeholder for date
   final String? tooltipTextFormat;
 
-  /// Bir katkı hücresine dokunulduğunda çağrılacak callback
+  /// Callback when a contribution cell is tapped
   final Function(DateTime date, int count)? onCellTap;
 
-  /// URL ön eki (isteğe bağlı, genellikle CORS sorunlarını aşmak için kullanılır)
+  /// URL prefix (optional, typically used to bypass CORS issues)
   final String? urlPrefix;
 
-  /// GitHub katkı grafiği widget'ı oluşturur
+  /// Creates a GitHub contribution graph widget
   ///
-  /// [githubUrl] bir GitHub kullanıcı adı veya tam bir GitHub profil URL'si olabilir
-  /// [showRecent] true ise, [year] dikkate alınmaz
-  /// [width] veya [height] değerlerinden en az biri sağlanmalıdır
+  /// [githubUrl] can be a GitHub username or a complete GitHub profile URL
+  /// If [showRecent] is true, [year] is ignored
+  /// At least one of [width] or [height] values must be provided
   GitHubContributionsWidget({
     super.key,
     required String githubUrl,
@@ -110,23 +110,23 @@ class GitHubContributionsWidget extends StatefulWidget {
     this.urlPrefix,
   }) : assert(
          width != null || height != null,
-         "Genişlik veya yükseklikten en az biri belirtilmelidir",
+         "At least one of width or height must be specified",
        ),
        assert(
          customMonthLabels == null || customMonthLabels.length == 12,
-         "customMonthLabels tam olarak 12 ay adı içermelidir",
+         "customMonthLabels must contain exactly 12 month names",
        ),
        assert(
          customDayLabels == null || customDayLabels.length == 3,
-         "customDayLabels tam olarak 3 gün adı içermelidir",
+         "customDayLabels must contain exactly 3 day names",
        ),
        assert(
          singleColorOpacities == null || singleColorOpacities.length == 5,
-         "singleColorOpacities tam olarak 5 değer içermelidir (0.0-1.0)",
+         "singleColorOpacities must contain exactly 5 values (0.0-1.0)",
        ),
        username = _extractUsername(githubUrl);
 
-  /// GitHub URL'sinden kullanıcı adını çıkarır veya sadece bir kullanıcı adıysa aynı string'i döndürür
+  /// Extracts username from GitHub URL or returns the same string if it's just a username
   static String _extractUsername(String githubUrl) {
     if (githubUrl.contains('github.com/')) {
       return githubUrl.split('/').last;

@@ -1,16 +1,16 @@
 part of 'github_contributions_widget.dart';
 
 class _GitHubContributionsWidgetState extends State<GitHubContributionsWidget> {
-  /// Katkı verisi
+  /// Contribution data
   ContributionData _contributionData = ContributionData.empty();
 
-  /// Yükleniyor durumu
+  /// Loading state
   bool _isLoading = true;
 
-  /// Seçili yıl
+  /// Selected year
   late int _selectedYear;
 
-  /// Son katkılar modu mu?
+  /// Is it in recent contributions mode?
   late bool _isRecentlyView;
 
   @override
@@ -26,7 +26,7 @@ class _GitHubContributionsWidgetState extends State<GitHubContributionsWidget> {
   void didUpdateWidget(GitHubContributionsWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    // İlgili özellikler değişti mi kontrol et
+    // Check if relevant properties have changed
     if (oldWidget.year != widget.year ||
         oldWidget.showRecent != widget.showRecent ||
         oldWidget.username != widget.username) {
@@ -37,7 +37,7 @@ class _GitHubContributionsWidgetState extends State<GitHubContributionsWidget> {
     }
   }
 
-  /// GitHub'dan katkı verilerini getir
+  /// Fetch contribution data from GitHub
   Future<void> _fetchContributions() async {
     setState(() {
       _isLoading = true;
@@ -58,38 +58,38 @@ class _GitHubContributionsWidgetState extends State<GitHubContributionsWidget> {
     }
   }
 
-  /// Dokunma olayını işle
+  /// Handle tap event
   void _handleTap(TapUpDetails details) {
     if (_isLoading || widget.onCellTap == null) return;
 
-    // Takvim etiketleri için kenar boşlukları
+    // Margins for calendar labels
     double leftPadding = 0;
     double topPadding = 0;
 
     if (widget.showCalendar) {
-      // Kullanılabilir genişlik/yükseklik oranı için sabit değerler
+      // Fixed values for available width/height ratio
       final widgetSize = LayoutUtils.calculateWidgetSize(
         width: widget.width,
         height: widget.height,
       );
-      leftPadding = widgetSize.width * 0.06; // %6 sol kenar boşluğu
-      topPadding = widgetSize.height * 0.1; // %10 üst kenar boşluğu
+      leftPadding = widgetSize.width * 0.06; // 6% left margin
+      topPadding = widgetSize.height * 0.1; // 10% top margin
     }
 
-    // Tıklama konumunu al
+    // Get tap position
     final tapPosition = details.localPosition;
 
-    // Widget boyutlarını hesapla
+    // Calculate widget dimensions
     final widgetSize = LayoutUtils.calculateWidgetSize(
       width: widget.width,
       height: widget.height,
     );
 
-    // Kullanılabilir alan
+    // Available area
     final availableWidth = widgetSize.width - leftPadding;
     final availableHeight = widgetSize.height - topPadding;
 
-    // Hücre ölçümlerini hesapla
+    // Calculate cell metrics
     final metrics = LayoutUtils.calculateCellMetrics(
       availableWidth: availableWidth,
       availableHeight: availableHeight,
@@ -108,7 +108,7 @@ class _GitHubContributionsWidgetState extends State<GitHubContributionsWidget> {
     final verticalOffset =
         topPadding + (availableHeight - adjustedTotalHeight) / 2;
 
-    // Tıklanan hücrenin koordinatlarını hesapla
+    // Calculate the coordinates of the tapped cell
     final coordinates = LayoutUtils.calculateTapCoordinates(
       tapPosition: tapPosition,
       horizontalOffset: horizontalOffset,
@@ -121,22 +121,22 @@ class _GitHubContributionsWidgetState extends State<GitHubContributionsWidget> {
       final weekIndex = coordinates['weekIndex']!;
       final dayIndex = coordinates['dayIndex']!;
 
-      // Hücredeki katkı değerini al
+      // Get contribution value in the cell
       final contribution = _contributionData.matrix[dayIndex][weekIndex];
 
-      // Hücrenin tarihini hesapla
+      // Calculate the date of the cell
       DateTime firstDayOfYear = DateTime(_selectedYear, 1, 1);
       int daysToAdd = (weekIndex * 7) + dayIndex;
       DateTime cellDate = firstDayOfYear.add(Duration(days: daysToAdd));
 
-      // Callback'i çağır
+      // Call the callback
       widget.onCellTap!(cellDate, contribution);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    // En-boy oranına göre boyut hesapla
+    // Calculate size based on aspect ratio
     final widgetSize = LayoutUtils.calculateWidgetSize(
       width: widget.width,
       height: widget.height,

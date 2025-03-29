@@ -1,73 +1,74 @@
 import 'package:flutter/material.dart';
 
-/// Katkı grafiği için düzen hesaplamaları içeren yardımcı sınıf
+/// Utility class containing layout calculations for the contribution graph
 class LayoutUtils {
-  /// GitHub katkı grafiğinin genişlik/yükseklik oranı
-  /// GitHub takvimi 53 hafta (sütun) ve 7 gün (satır) içerir
+  /// Width/height ratio of the GitHub contribution graph
+  /// GitHub calendar contains 53 weeks (columns) and 7 days (rows)
   static const double aspectRatio = 53 / 7;
 
-  /// Widget boyutlarını (genişlik ve yükseklik) hesaplar
+  /// Calculates widget dimensions (width and height)
   ///
-  /// [width] Widget genişliği
-  /// [height] Widget yüksekliği
+  /// [width] Widget width
+  /// [height] Widget height
   static Size calculateWidgetSize({double? width, double? height}) {
     assert(
       width != null || height != null,
-      "En az genişlik veya yükseklik belirtilmelidir",
+      "At least width or height must be specified",
     );
 
     if (width != null && height != null) {
-      // Her iki boyut da belirtilmiş, en-boy oranına göre seç
+      // Both dimensions specified, select based on aspect ratio
       final providedRatio = width / height;
 
       if (providedRatio > aspectRatio) {
-        // Genişlik, yükseklik için çok büyük, yüksekliği kısıtlama olarak kullan
+        // Width is too large for height, use height as constraint
         final calculatedWidth = height * aspectRatio;
         return Size(calculatedWidth, height);
       } else {
-        // Yükseklik, genişlik için çok büyük, genişliği kısıtlama olarak kullan
+        // Height is too large for width, use width as constraint
         final calculatedHeight = width / aspectRatio;
         return Size(width, calculatedHeight);
       }
     } else if (width != null) {
-      // Sadece genişlik belirtilmiş
+      // Only width specified
       final calculatedHeight = width / aspectRatio;
       return Size(width, calculatedHeight);
     } else {
-      // Sadece yükseklik belirtilmiş (genişlik null olmalı)
+      // Only height specified (width must be null)
       final calculatedWidth = height! * aspectRatio;
       return Size(calculatedWidth, height);
     }
   }
 
-  /// Hücre boyutu ve hücre aralığı hesaplar
+  /// Calculates cell size and cell spacing
   ///
-  /// [availableWidth] Kullanılabilir genişlik
-  /// [availableHeight] Kullanılabilir yükseklik
-  /// [cellSpacing] Hücreler arası boşluk
+  /// [availableWidth] Available width
+  /// [availableHeight] Available height
+  /// [cellSpacing] Space between cells
+  /// [squareBorderRadius] Border radius for squares
   static Map<String, double> calculateCellMetrics({
     required double availableWidth,
     required double availableHeight,
     required double cellSpacing,
     required double squareBorderRadius,
   }) {
-    // Hücre boyutlarını hesapla
+    // Calculate cell dimensions
     final cellWidth = availableWidth / 53;
     final cellHeight = availableHeight / 7;
     final baseCellSize = cellWidth < cellHeight ? cellWidth : cellHeight;
 
-    // Widget boyutuna göre ölçeklenebilir padding ve border radius değerleri
-    final scaleFactor = baseCellSize / 15.0; // 15.0 referans değer
+    // Scale padding and border radius values based on widget size
+    final scaleFactor = baseCellSize / 15.0; // 15.0 is the reference value
     final scaledCellSpacing = cellSpacing * scaleFactor;
     final scaledBorderRadius = squareBorderRadius * scaleFactor;
 
     final cellSize = baseCellSize - (scaledCellSpacing / 2);
 
-    // Toplam alanı hesapla
+    // Calculate total area
     final totalWidth = 53 * cellSize + 52 * scaledCellSpacing;
     final totalHeight = 7 * cellSize + 6 * scaledCellSpacing;
 
-    // Widget boyutunu aşarsa hücre boyutunu küçült
+    // Reduce cell size if exceeding widget dimensions
     final widgetScaleFactor =
         (totalWidth > availableWidth || totalHeight > availableHeight)
             ? (availableWidth / totalWidth < availableHeight / totalHeight
@@ -89,13 +90,13 @@ class LayoutUtils {
     };
   }
 
-  /// Dokununan pozisyondan gün ve hafta koordinatlarını hesaplar
+  /// Calculates day and week coordinates from touch position
   ///
-  /// [tapPosition] Dokunma konumu
-  /// [horizontalOffset] Yatay offset
-  /// [verticalOffset] Dikey offset
-  /// [adjustedCellSize] Ayarlanmış hücre boyutu
-  /// [adjustedCellSpacing] Ayarlanmış hücre aralığı
+  /// [tapPosition] Touch position
+  /// [horizontalOffset] Horizontal offset
+  /// [verticalOffset] Vertical offset
+  /// [adjustedCellSize] Adjusted cell size
+  /// [adjustedCellSpacing] Adjusted cell spacing
   static Map<String, int>? calculateTapCoordinates({
     required Offset tapPosition,
     required double horizontalOffset,
@@ -103,7 +104,7 @@ class LayoutUtils {
     required double adjustedCellSize,
     required double adjustedCellSpacing,
   }) {
-    // Tıklanan hücrenin hangi hafta ve gün olduğunu hesapla
+    // Calculate which week and day the tapped cell corresponds to
     final weekIndex =
         ((tapPosition.dx - horizontalOffset) /
                 (adjustedCellSize + adjustedCellSpacing))
@@ -113,7 +114,7 @@ class LayoutUtils {
                 (adjustedCellSize + adjustedCellSpacing))
             .floor();
 
-    // Geçerli bir hücreye tıklanıp tıklanmadığını kontrol et
+    // Check if a valid cell was tapped
     if (weekIndex >= 0 && weekIndex < 53 && dayIndex >= 0 && dayIndex < 7) {
       return {'weekIndex': weekIndex, 'dayIndex': dayIndex};
     }
