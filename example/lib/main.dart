@@ -421,6 +421,25 @@ class _HomePageState extends State<HomePage> {
                     urlPrefix: urlPrefix,
                   ),
                 ),
+
+                const SizedBox(height: 32),
+
+                // Example 4: Custom Headers for CORS
+                DemoSection(
+                  title: 'Custom Headers for CORS Issues',
+                  child: GitHubContributionsWidget(
+                    githubUrl: 'https://github.com/CanArslanDev',
+                    year: 2024,
+                    width: screenWidth > 900 ? 900 : screenWidth - 48,
+                    showCalendar: true,
+                    headers: const {
+                      'User-Agent': 'GitHubContributionsWidget/1.0',
+                      'Accept': 'text/html,application/xhtml+xml',
+                      'Access-Control-Allow-Origin': '*',
+                    },
+                    urlPrefix: urlPrefix,
+                  ),
+                ),
               ],
             ),
           ),

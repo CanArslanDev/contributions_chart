@@ -48,6 +48,7 @@ class _GitHubContributionsWidgetState extends State<GitHubContributionsWidget> {
       year: _selectedYear,
       showRecent: _isRecentlyView,
       urlPrefix: widget.urlPrefix,
+      headers: widget.headers,
     );
 
     if (mounted) {

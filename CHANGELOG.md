@@ -1,3 +1,9 @@
+## 1.0.0+4
+- Added support for custom HTTP headers to resolve CORS issues
+- Enhanced GitHubService with headers parameter for HTTP requests
+- Updated GitHubContributionsWidget to accept headers property
+- Added documentation and examples for CORS handling
+
 ## 1.0.0+3
 - Added more explanatory comment lines to the package
 

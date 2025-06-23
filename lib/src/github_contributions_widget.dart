@@ -79,11 +79,15 @@ class GitHubContributionsWidget extends StatefulWidget {
   /// URL prefix (optional, typically used to bypass CORS issues)
   final String? urlPrefix;
 
+  /// Custom HTTP headers for requests (useful for solving CORS issues)
+  final Map<String, String>? headers;
+
   /// Creates a GitHub contribution graph widget
   ///
   /// [githubUrl] can be a GitHub username or a complete GitHub profile URL
   /// If [showRecent] is true, [year] is ignored
   /// At least one of [width] or [height] values must be provided
+  /// [headers] can be used to add custom HTTP headers for CORS handling
   GitHubContributionsWidget({
     super.key,
     required String githubUrl,
@@ -108,6 +112,7 @@ class GitHubContributionsWidget extends StatefulWidget {
     this.tooltipTextFormat,
     this.onCellTap,
     this.urlPrefix,
+    this.headers,
   }) : assert(
          width != null || height != null,
          "At least one of width or height must be specified",

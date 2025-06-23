@@ -117,6 +117,7 @@ GitHubContributionsWidget(
 | `tooltipTextFormat` | `String?` | Custom tooltip text format |
 | `onCellTap` | `Function(DateTime, int)?` | Callback when a contribution cell is tapped |
 | `urlPrefix` | `String?` | URL prefix (optional, typically used to bypass CORS issues) |
+| `headers` | `Map<String, String>?` | Custom HTTP headers for requests (useful for CORS issues) |
 
 ## How It Works
 
@@ -189,6 +190,25 @@ GitHubContributionsWidget(
   width: 400,
   height: 150,
   showCalendar: true,
+),
+```
+
+### Handling CORS Issues
+
+For web applications or when accessing GitHub from restricted domains, you can use custom headers to resolve CORS issues:
+
+```dart
+GitHubContributionsWidget(
+  githubUrl: 'username',
+  width: 400,
+  height: 150,
+  headers: {
+    'User-Agent': 'MyApp/1.0',
+    'Accept': 'text/html,application/xhtml+xml',
+    'Access-Control-Allow-Origin': '*',
+  },
+  // Optional: Use with proxy services
+  urlPrefix: 'https://api.codetabs.com/v1/proxy?quest=',
 ),
 ```
 

@@ -11,11 +11,13 @@ class GitHubService {
   /// [year] Year to fetch data for (ignored if recent view is selected)
   /// [showRecent] Show recent contributions
   /// [urlPrefix] URL prefix (optional, typically used to bypass CORS issues)
+  /// [headers] Custom HTTP headers for the request
   static Future<ContributionData> fetchContributions({
     required String username,
     required int year,
     bool showRecent = false,
     String? urlPrefix,
+    Map<String, String>? headers,
   }) async {
     final prefix = urlPrefix?.isNotEmpty == true ? urlPrefix! : '';
     String url;
@@ -30,7 +32,7 @@ class GitHubService {
     }
 
     try {
-      final response = await http.get(Uri.parse(url));
+      final response = await http.get(Uri.parse(url), headers: headers);
 
       if (response.statusCode == 200) {
         return _parseContributionHtml(response.body, year, showRecent);
